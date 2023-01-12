@@ -13,7 +13,10 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({extends:false}))
 
-app.use('/api/formation', require('./routes/formationRoutes'))
+app.use('/api/formation', require('./routes/formation.routes'))
+app.use('/api/user', require('./routes/user.routes'))
+app.use('/api/organisme', require('./routes/organisme.routes'))
+app.use('/api/auth', require('./routes/auth.routes'))
 
 app.use(errorHanler)
 
