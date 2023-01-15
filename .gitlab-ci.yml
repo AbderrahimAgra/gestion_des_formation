@@ -1,0 +1,9 @@
+stages:
+  - front_build
+  - front_test
+  - back_build
+  - back_test
+
+font_build_job:
+  stage: front_build
+  script: "echo mother father"
