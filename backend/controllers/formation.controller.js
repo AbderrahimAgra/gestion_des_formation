@@ -54,7 +54,7 @@ const deleteFormation = asyncHandler( async (req , res) => {
    
     await formation.remove()
 
-    res.status(200).json({id: req.params.id})
+    res.status(204).json({id: req.params.id})
     })
 
 
