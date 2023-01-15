@@ -25,6 +25,13 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'please add password'],
     },
+    organisme:{
+        type: mongoose.Schema.Types.ObjectId,
+        required: [true, 'please select an organisme']
+    },
+    formations:[{
+        type: mongoose.Schema.Types.ObjectId,
+    }]
 
 
 },{ timestamps: true })

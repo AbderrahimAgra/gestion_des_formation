@@ -8,20 +8,46 @@ import EmployeesForm from "../components/EmployeesForm";
 function Employees() {
 
     const [employees, setEmployees] = useState([]);
+    const [formations, setFormations] = useState([]);
+    const [organismes, setOrganismes] = useState([]);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
+
+    const getFormations = async () => {
+        let res = await api.get("formation", { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+        setFormations(res.data);
+    }
+
+    const getOrganismes = async () => {
+        let res = await api.get("organisme", { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+        setOrganismes(res.data);
+    }
 
     const getEmployees = async () => {
         api.get("user", { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then((res) => {
-            if (res.status == 200) {
-                setEmployees(res.data);
-            }
+
+            let data = res.data.map((employee) => {
+                // let org = organismes.find((organisme) => {
+                //     return employee.organisme === organisme._id;
+                // });
+                // let format = formations.filter((formation) => {
+                //     return employee.formations.includes(formation._id);
+                // })
+                return {
+                    ...employee,
+                    // formations: format,
+                    // organisme: org
+                }
+            })
+            console.log('data',data);
+            setEmployees(data);
         }).catch((e) => {
             console.error(e);
         })
     }
 
     const updateEmployee = (id) => {
-        setSelectedEmployee(employees.find((employee) => { return employee._id === id }))
+        setSelectedEmployee(null);
+        setSelectedEmployee({data:employees.find((employee) => { return employee._id === id }),formations:formations,organismes:organismes})
     }
 
     const deleteEmployee = (id) => {
@@ -35,6 +61,8 @@ function Employees() {
     }
 
     useEffect(() => {
+        getFormations();
+        getOrganismes();
         getEmployees();
     }, [])
 
@@ -45,8 +73,8 @@ function Employees() {
                 <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
                     <div className="sm:px-0">
                         <div>
-                            <button onClick={()=>{setSelectedEmployee({})}} className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-primary-800">Add Employee</button>
-                            {selectedEmployee && <EmployeesForm data={selectedEmployee} callback={()=>{getEmployees(),setSelectedEmployee(null)}} />}
+                            <button onClick={() => { setSelectedEmployee(null); setSelectedEmployee({formations,organismes}) }} className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-primary-800">Add Employee</button>
+                            {selectedEmployee && <EmployeesForm data={selectedEmployee} callback={() => { getEmployees(), setSelectedEmployee(null) }} />}
                             <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
                                 <div className="inline-block min-w-full shadow-md rounded-lg overflow-hidden">
                                     <table className="min-w-full leading-normal">
@@ -54,7 +82,8 @@ function Employees() {
                                             <tr>
                                                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Full name</th>
                                                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Email/(verified)</th>
-                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Role</th>
+                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Organisme</th>
+                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Formations</th>
                                                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100"></th>
                                             </tr>
                                         </thead>
@@ -69,12 +98,15 @@ function Employees() {
                                                             <p className="text-gray-900 whitespace-no-wrap">{employee.email}</p>
                                                         </td>
                                                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                            {employee.role &&
-                                                                employee.role.map((rol) => {
+                                                            <p className="text-gray-900 whitespace-no-wrap">{employee.organisme}</p>
+                                                        </td>
+                                                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                            {employee.formations &&
+                                                                employee.formations.map((formation, key) => {
                                                                     return (
-                                                                        <span className="relative inline-block m-1 px-3 py-1 font-semibold text-orange-900 leading-tight">
+                                                                        <span key={key} className="relative inline-block m-1 px-3 py-1 font-semibold text-orange-900 leading-tight">
                                                                             <span aria-hidden className="absolute inset-0 bg-orange-200 opacity-50 rounded-full"></span>
-                                                                            <span className="relative">{rol}</span>
+                                                                            <span className="relative">{formation}</span>
                                                                         </span>
                                                                     )
                                                                 })

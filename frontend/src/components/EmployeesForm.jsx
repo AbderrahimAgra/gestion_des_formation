@@ -1,17 +1,34 @@
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import api from "../api";
-function EmployeesForm({ data,callback }) {
+function EmployeesForm({ data, callback }) {
+    const [firstname, setFirstname] = useState(data?.data?.firstname || "");
+    const [lastname, setLastname] = useState(data?.data?.lastname || "");
+    const [email, setEmail] = useState(data?.data?.email || "");
+    const [password, setPassword] = useState(data?.data?.password || "");
+    const [passwordConf, setPasswordConf] = useState(data?.data?.password || "");
+    const [formation, setFormation] = useState(data?.data?.formations || []);
+    const [organisme, setOrganisme] = useState(data?.data?.organisme || "");
+    const [organismes, setOrganismes] = useState(data?.organismes || "");
+    const [formations, setFormations] = useState(data?.formations || "");
+    const selectFormation = (state, id) => {
+        setFormation([])
+        if (state) {
+            let tmp = formation;
+            tmp.push(id);
+            setFormation(tmp);
+        } else {
+            let tmp = formation.filter((formation) => {
+                return formation != id;
+            })
+            setFormation(tmp)
+        }
+    }
 
-    const [firstname, setFirstname] = useState(data?.firstname || "");
-    const [lastname, setLastname] = useState(data?.lastname || "");
-    const [email, setEmail] = useState(data?.email || "");
-    const [password, setPassword] = useState(data?.password || "");
-    const [passwordConf, setPasswordConf] = useState(data?.password || "");
 
     const update = () => {
-        if (password !== passwordConf) {
-            console.log("Password dosen't match!")
+        if (password !== passwordConf || organisme == "") {
+            console.log("Password dosen't match! or no organisme selected!")
             return;
         }
         api.put(`user/${data._id}`, {
@@ -19,6 +36,8 @@ function EmployeesForm({ data,callback }) {
             lastname: lastname,
             email: email,
             password: password,
+            organisme:{_id:organisme},
+            formation:formation.map((e)=>{ return {_id:e}}),
             role: ["admin"],
         }, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then((res) => {
             console.log('res', res);
@@ -29,8 +48,8 @@ function EmployeesForm({ data,callback }) {
     }
 
     const add = () => {
-        if (password !== passwordConf) {
-            console.log("Password dosen't match!")
+        if (password !== passwordConf || organisme == "") {
+            console.log("Password dosen't match! or no organisme selected!")
             return;
         }
         api.post(`user`, {
@@ -38,6 +57,8 @@ function EmployeesForm({ data,callback }) {
             lastname: lastname,
             email: email,
             password: password,
+            organisme:{"_id":organisme},
+            formation:formation.map((e)=>{ return {"_id":e}}),
             role: ["admin"],
         }, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then((res) => {
             console.log('res', res);
@@ -76,12 +97,32 @@ function EmployeesForm({ data,callback }) {
                                 </div>
                                 <div className="grid grid-cols-6 gap-6 mb-5">
                                     <div className="col-span-6 sm:col-span-3">
+                                        <label htmlFor="formations" className="block text-sm font-medium text-gray-700">Formations</label>
+                                        {formations && formations.map((_formation, index) => {
+                                            return (<div key={index}>
+                                                <input checked={formation.includes(_formation._id)} onClick={(e) => { selectFormation(e.target.checked, _formation._id) }} type="checkbox" id={formation._id} key={index} />
+                                                <label className="ml-3" key={index} htmlFor={_formation._id} >{_formation.name}</label>
+                                            </div>)
+                                        })}
+                                    </div>
+                                    <div className="col-span-6 sm:col-span-3">
+                                        <label htmlFor="organisme" className="block text-sm font-medium text-gray-700">Organisme</label>
+                                        <select value={organisme} onChange={(e) => { setOrganisme(e.target.value) }} name="organisme" id="organisme" autoComplete="organisme" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"  >
+                                            <option value="" selected disabled>Select Formation...</option>
+                                            {organismes && organismes.map((organisme, key) => {
+                                                return <option key={key} value={organisme._id}>{organisme.name}</option>
+                                            })}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-6 gap-6 mb-5">
+                                    <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
                                         <input value={password} onChange={(e) => { setPassword(e.target.value) }} type="password" name="password" id="password" autoComplete="family-name" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="passwordConf" className="block text-sm font-medium text-gray-700">Confirm password</label>
-                                        <input value={passwordConf} onChange={(e) => { setPasswordConf(e.target.value) }} type="passwordConf" name="passwordConf" id="passwordConf" autoComplete="family-name" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
+                                        <input value={passwordConf} onChange={(e) => { setPasswordConf(e.target.value) }} type="password" name="passwordConf" id="passwordConf" autoComplete="family-name" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" />
                                     </div>
                                 </div>
                             </div>
