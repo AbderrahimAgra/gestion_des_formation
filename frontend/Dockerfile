@@ -1,5 +1,6 @@
-FROM node:16.18-alpine3.15
+FROM node
 WORKDIR /home/front-end-vite
+COPY package*.json .
+RUN npm ci
 COPY . .
-RUN npm install
 CMD ["npm","run","dev"]

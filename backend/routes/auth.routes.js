@@ -5,8 +5,8 @@ const {
     loginUser,
 } = require('../controllers/auth.controller')
 
-router.post('/register',registerUser)           
-router.post('/login',loginUser)       
+router.post('/register', registerUser)
+router.post('/login', loginUser)
 
 
 

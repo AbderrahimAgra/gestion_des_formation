@@ -51,7 +51,6 @@ function Organismes() {
                                         <thead>
                                             <tr>
                                                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Name</th>
-                                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Users(count)</th>
                                                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100"></th>
                                             </tr>
                                         </thead>
@@ -61,9 +60,6 @@ function Organismes() {
                                                     return (<tr key={key}>
                                                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             <p className="text-gray-900 whitespace-no-wrap">{organisme.name}</p>
-                                                        </td>
-                                                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                            <p className="text-gray-900 whitespace-no-wrap">{organisme.users.length}</p>
                                                         </td>
                                                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm text-right">
                                                             <button onClick={() => { updateOrganisme(organisme._id) }} type="button" className="inline-block text-gray-500 hover:text-gray-700 mx-3">

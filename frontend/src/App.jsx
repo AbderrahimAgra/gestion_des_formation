@@ -7,11 +7,13 @@ import UserContext from './context/user.context'
 function App() {  
   return ( <>
     <UserContext.Provider value={{
-      isLogedIn: false
+       
+      
   }}>
       <RouterProvider  router={router}/>
     </UserContext.Provider>
     </> 
+    
     )
 }
 

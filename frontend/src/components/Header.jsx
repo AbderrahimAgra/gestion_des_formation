@@ -1,5 +1,6 @@
+import { FaUniversity } from 'react-icons/fa';
 import { Link, useNavigate } from "react-router-dom";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 function Header({ title }) {
   const navigate = useNavigate();
@@ -7,6 +8,12 @@ function Header({ title }) {
     localStorage.clear();
     navigate("/login")
   }
+  
+  const [role, setRole] = useState(null);
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    setRole(user.role);
+  }, [])
   return (
     <>
       <nav className="bg-gray-800">
@@ -14,14 +21,16 @@ function Header({ title }) {
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <img className="h-8 w-8" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company" />
+                <FaUniversity />
               </div>
               <div className="hidden md:block">
                 <div className="ml-10 flex items-baseline space-x-4">
-                  <Link to={"/"} className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium" aria-current="page">Dashboard</Link>
-                  <Link to={"/formations"} className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Formations</Link>
-                  <Link to={"/organismes"} className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Organismes</Link>
-                  <Link to={"/employees"} className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Employees</Link>
+                  {(role == 'admin') && <Link to={"/"} className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium" aria-current="page">Dashboard</Link>}
+                  {(role == 'admin') && <Link to={"/formations"} className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Formations</Link>}
+                  <Link to={"/userFormations"} className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Formations</Link>
+
+                  {(role == 'admin') && <Link to={"/organismes"} className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Organismes</Link>}
+                  {(role == 'admin') && <Link to={"/employees"} className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Employees</Link>}
                 </div>
               </div>
             </div>

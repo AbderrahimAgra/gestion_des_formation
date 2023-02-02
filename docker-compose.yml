@@ -4,25 +4,23 @@ services:
     build: ./backend
     container_name: "backend-mf-container"
     ports :
-      - 3000:3000
+      - 5000:5000
     networks:
-      - marhaba-app
-    depends_on:
-      - mongo
+      - formation-management
+    volumes:
+      - ./backend:/home/backend
+    
   front-end :
-    build: ./front
+    build: ./frontend
     container_name: "front-end-mf-container"
     ports:
       - 5173:5173
     networks:
-      - marhaba-app
+      - formation-management
+    volumes:
+      - ./frontend:/home/front-end-vite
 
-  mongo:
-    image: mongo:3.6.19-xenial
-    ports:
-      - 27017:27017
-    networks:
-      - marhaba-app
+  
 networks:
-  marhaba-app:
+  formation-management:
     driver: bridge

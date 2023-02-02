@@ -12,8 +12,10 @@
     "@heroicons/react": "^2.0.13",
     "@material-tailwind/react": "^1.2.5",
     "axios": "^1.2.2",
+    "faker": "^6.6.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.7.1",
     "react-router-dom": "^6.6.2"
   },
   "devDependencies": {

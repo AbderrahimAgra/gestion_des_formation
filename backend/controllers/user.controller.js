@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler')
 const User = require('../models/User')
+const bcrypt = require('bcryptjs')
 
 // @desc Get user data
 // @route Get /api/user/me
@@ -35,15 +36,22 @@ const getUser = asyncHandler(async (req, res) => {
 // @route Get /api/user/:id
 // @access Private
 const addUser = asyncHandler(async (req, res) => {
-    let users = await User.create({
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        email: req.body.email,
-        password: req.body.password,
-        organisme: req.body.organisme,
-        formations: req.body.formation
-    });
-    res.status(200).json(users);
+    try {
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(req.body.password, salt)
+        let users = await User.create({
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            email: req.body.email,
+            password: hashedPassword,
+            organisme: req.body.organisme,
+            formations: req.body.formation,
+            role: 'emploiyee',
+        });
+        res.status(200).json(users);
+    } catch (error) {
+        console.error(error);
+    }
 })
 
 // @desc Update User
@@ -57,15 +65,23 @@ const updateUser = asyncHandler(async (req, res) => {
         throw new Error('User not found')
     }
 
+    let data = {
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        email: req.body.email,
+        organisme: req.body.organisme,
+        formations: req.body.formation
+    }
+
+    if(req.body.password){
+        //Hash password
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(req.body.password, salt)
+        data.password = hashedPassword;
+    }
+
     const updatedUser = await User.findByIdAndUpdate(req.params.id,
-        {
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            email: req.body.email,
-            password: req.body.password,
-            organisme: req.body.organisme,
-            formations: req.body.formation
-        }
+        data
         , { new: true })
 
     res.status(200).json(updatedUser);

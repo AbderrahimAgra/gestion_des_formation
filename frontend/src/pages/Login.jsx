@@ -12,11 +12,10 @@ function Login() {
   const [error, setError] = useState(false)
 
   const userStore = useContext(UserContext)
-
+  
   const [isLogedIn, setIsLogedIn] = useState(userStore.isLogedIn)
 
   const navigate = useNavigate()
-  // console.log(userStore)
   const login = (e) => {
     e.preventDefault()
     if (email == '' || password == '') return setError(true)

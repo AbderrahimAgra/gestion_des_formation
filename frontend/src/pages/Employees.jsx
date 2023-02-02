@@ -10,6 +10,7 @@ function Employees() {
     const [employees, setEmployees] = useState([]);
     const [formations, setFormations] = useState([]);
     const [organismes, setOrganismes] = useState([]);
+    const [counter, setCounter] = useState(0);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
 
     const getFormations = async () => {
@@ -23,22 +24,24 @@ function Employees() {
     }
 
     const getEmployees = async () => {
+        if(organismes.length == 0 || formations.length == 0){
+            setCounter((counter + 1));
+            return
+        }
         api.get("user", { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then((res) => {
-
             let data = res.data.map((employee) => {
-                // let org = organismes.find((organisme) => {
-                //     return employee.organisme === organisme._id;
-                // });
-                // let format = formations.filter((formation) => {
-                //     return employee.formations.includes(formation._id);
-                // })
+                let org = organismes.find((organisme) => {
+                    return employee.organisme === organisme._id;
+                });
+                let format = formations.filter((formation) => {
+                    return employee.formations.includes(formation._id);
+                })
                 return {
                     ...employee,
-                    // formations: format,
-                    // organisme: org
+                    formations: format || [],
+                    organisme: org
                 }
             })
-            console.log('data',data);
             setEmployees(data);
         }).catch((e) => {
             console.error(e);
@@ -64,7 +67,7 @@ function Employees() {
         getFormations();
         getOrganismes();
         getEmployees();
-    }, [])
+    }, [counter])
 
     return (
         <div className="min-h-full">
@@ -98,7 +101,7 @@ function Employees() {
                                                             <p className="text-gray-900 whitespace-no-wrap">{employee.email}</p>
                                                         </td>
                                                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                                            <p className="text-gray-900 whitespace-no-wrap">{employee.organisme}</p>
+                                                            {employee.organisme && <p className="text-gray-900 whitespace-no-wrap">{employee.organisme.name}</p>}
                                                         </td>
                                                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                                             {employee.formations &&
@@ -106,7 +109,7 @@ function Employees() {
                                                                     return (
                                                                         <span key={key} className="relative inline-block m-1 px-3 py-1 font-semibold text-orange-900 leading-tight">
                                                                             <span aria-hidden className="absolute inset-0 bg-orange-200 opacity-50 rounded-full"></span>
-                                                                            <span className="relative">{formation}</span>
+                                                                            <span className="relative">{formation.name}</span>
                                                                         </span>
                                                                     )
                                                                 })

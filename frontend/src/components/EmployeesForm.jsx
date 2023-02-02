@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import api from "../api";
+
 function EmployeesForm({ data, callback }) {
+
     const [firstname, setFirstname] = useState(data?.data?.firstname || "");
     const [lastname, setLastname] = useState(data?.data?.lastname || "");
     const [email, setEmail] = useState(data?.data?.email || "");
@@ -11,6 +13,7 @@ function EmployeesForm({ data, callback }) {
     const [organisme, setOrganisme] = useState(data?.data?.organisme || "");
     const [organismes, setOrganismes] = useState(data?.organismes || "");
     const [formations, setFormations] = useState(data?.formations || "");
+
     const selectFormation = (state, id) => {
         setFormation([])
         if (state) {
@@ -25,10 +28,9 @@ function EmployeesForm({ data, callback }) {
         }
     }
 
-
     const update = () => {
         if (password !== passwordConf || organisme == "") {
-            console.log("Password dosen't match! or no organisme selected!")
+            throw "Password dosen't match! or no organisme selected!"
             return;
         }
         api.put(`user/${data._id}`, {
@@ -40,7 +42,6 @@ function EmployeesForm({ data, callback }) {
             formation:formation.map((e)=>{ return {_id:e}}),
             role: ["admin"],
         }, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then((res) => {
-            console.log('res', res);
             callback();
         }).catch((e) => {
             console.error(e);
@@ -49,7 +50,7 @@ function EmployeesForm({ data, callback }) {
 
     const add = () => {
         if (password !== passwordConf || organisme == "") {
-            console.log("Password dosen't match! or no organisme selected!")
+            throw "Password dosen't match! or no organisme selected!"
             return;
         }
         api.post(`user`, {
@@ -57,11 +58,10 @@ function EmployeesForm({ data, callback }) {
             lastname: lastname,
             email: email,
             password: password,
-            organisme:{"_id":organisme},
-            formation:formation.map((e)=>{ return {"_id":e}}),
+            organisme:{"_id":organisme._id || organisme},
+            formation:formation.map((e)=>{ return {"_id":e._id || e}}),
             role: ["admin"],
         }, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }).then((res) => {
-            console.log('res', res);
             callback();
         }).catch((e) => {
             console.error(e);
@@ -100,7 +100,7 @@ function EmployeesForm({ data, callback }) {
                                         <label htmlFor="formations" className="block text-sm font-medium text-gray-700">Formations</label>
                                         {formations && formations.map((_formation, index) => {
                                             return (<div key={index}>
-                                                <input checked={formation.includes(_formation._id)} onClick={(e) => { selectFormation(e.target.checked, _formation._id) }} type="checkbox" id={formation._id} key={index} />
+                                                <input checked={formation.includes(_formation._id)} onChange={(e) => { selectFormation(e.target.checked, _formation._id) }} type="checkbox" id={_formation._id} key={"_"+index} />
                                                 <label className="ml-3" key={index} htmlFor={_formation._id} >{_formation.name}</label>
                                             </div>)
                                         })}
@@ -108,9 +108,9 @@ function EmployeesForm({ data, callback }) {
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="organisme" className="block text-sm font-medium text-gray-700">Organisme</label>
                                         <select value={organisme} onChange={(e) => { setOrganisme(e.target.value) }} name="organisme" id="organisme" autoComplete="organisme" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"  >
-                                            <option value="" selected disabled>Select Formation...</option>
+                                            <option value="" disabled>Select Formation...</option>
                                             {organismes && organismes.map((organisme, key) => {
-                                                return <option key={key} value={organisme._id}>{organisme.name}</option>
+                                                return <option key={key+1} value={organisme._id}>{organisme.name}</option>
                                             })}
                                         </select>
                                     </div>

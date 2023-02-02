@@ -4,8 +4,11 @@ const {
     getFormations,
     setFormation,
     updateFormation,
-    deleteFormation
+    deleteFormation,
+    
 } = require('../controllers/formation.controller')
+
+
 
 router.route('/').get(getFormations).post(setFormation)
 router.route('/:id').put(updateFormation).delete(deleteFormation)

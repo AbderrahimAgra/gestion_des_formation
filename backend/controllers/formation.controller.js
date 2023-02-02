@@ -9,6 +9,7 @@ const getFormations = asyncHandler(async (req , res) => {
     const formations = await Formation.find()
     res.status(200).json(formations)
 })
+
 // @desc set formations
 // @route POST /api/formation/:id
 // access Private 
@@ -63,5 +64,6 @@ module.exports = {
     getFormations,
     setFormation,
     updateFormation,
-    deleteFormation
+    deleteFormation,
+    
 }

@@ -27,6 +27,9 @@ const registerUser = asyncHandler( async (req, res) => {
         lastname,
         email,
         password: hashedPassword,
+        organisme: req.body.organisme,
+        formations: req.body.formation,
+        role: 'admin'
     })
     if(user) {
         res.status(201).json({
@@ -55,6 +58,7 @@ const loginUser = asyncHandler( async (req, res) => {
         firstname: user.firstname,
         lastname: user.lastname,
         email: user.email,
+        role: user.role,
         token: generatejwt(user._id)
        }) 
     } else {
